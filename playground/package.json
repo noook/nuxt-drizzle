@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "my-module-playground",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "generate": "nuxi generate"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.0",
+    "nuxt": "^3.14.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.27.1"
+  }
+}
