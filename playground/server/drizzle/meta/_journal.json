@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1730843812878,
+      "tag": "0000_misty_miss_america",
+      "breakpoints": true
+    }
+  ]
+}
