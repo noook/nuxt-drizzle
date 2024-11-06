@@ -1,8 +1,7 @@
 import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
-import type { Config as DrizzleConfig } from 'drizzle-kit'
 import { defineConfig } from 'drizzle-kit'
-import { getTableColumns, getTableName } from 'drizzle-orm'
-import { hasMagic } from 'glob'
+import { generateSQLiteDrizzleJson } from 'drizzle-kit/api'
+import { prepareFilenames } from './loader'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -24,28 +23,29 @@ export default defineNuxtModule<ModuleOptions>({
     const { default: mod } = await import(drizzleConfigPath)
     const drizzleConfig = defineConfig(mod)
 
-    async function watchSchemas(schemaPath: DrizzleConfig['schema']) {
-      if (!schemaPath || Array.isArray(schemaPath)) {
-        return
-      }
-
-      // Handle globs
-      if (hasMagic(schemaPath)) {
-        return
-      }
-
-      const resolvedSchemaEntry = resolver.resolve(_nuxt.options.rootDir, schemaPath)
-      const schema = await import(resolvedSchemaEntry)
-      for (const key in schema) {
-        const table = schema[key]
-        console.log(`Found table "${getTableName(table)}" with columns: [${Object.keys(getTableColumns(table)).join(', ')}]`)
-      }
-
-      _nuxt.hook('builder:watch', async (event, path) => {
-        // Check if path is a child of schemaPath
-      })
+    if (!drizzleConfig.schema) {
+      console.warn('No schema path found in drizzle.config.ts')
+      return
     }
 
-    watchSchemas(drizzleConfig.schema)
+    const resolvedPaths = Array.isArray(drizzleConfig.schema)
+      ? drizzleConfig.schema.map(path => resolver.resolve(_nuxt.options.rootDir, path))
+      : [resolver.resolve(_nuxt.options.rootDir, drizzleConfig.schema)]
+
+    // @todo: find a way to watch the schema files
+    const filenames = prepareFilenames(resolvedPaths)
+    console.log(filenames)
+
+    const imports: Record<string, unknown> = {}
+    for (const path of filenames) {
+      const mod = await import(path)
+      for (const exp in mod) {
+        imports[exp] = mod[exp]
+      }
+    }
+
+    // @todo: Choose the right generator based on the dialect
+    const json = await generateSQLiteDrizzleJson(imports)
+    console.log(json)
   },
 })
