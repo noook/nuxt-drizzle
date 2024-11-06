@@ -1,8 +1,8 @@
-import { integer, pgTable, text } from 'drizzle-orm/pg-core'
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { users } from './users'
 
-export const posts = pgTable('posts', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity({ startWith: 1000 }),
+export const posts = sqliteTable('posts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id),
   title: text('title').notNull(),
   content: text('content').notNull(),
