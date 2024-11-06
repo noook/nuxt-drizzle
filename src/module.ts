@@ -3,7 +3,7 @@ import { defineConfig } from 'drizzle-kit'
 import { generateSQLiteDrizzleJson } from 'drizzle-kit/api'
 import { prepareFilenames } from './loader'
 
-// Module options TypeScript interface definition
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ModuleOptions {}
 
 export default defineNuxtModule<ModuleOptions>({
