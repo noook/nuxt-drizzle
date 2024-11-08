@@ -50,7 +50,6 @@ export default defineNuxtModule<ModuleOptions>({
     )
       .map(path => resolver.resolve(nuxt.options.rootDir, path))
 
-    // @todo: find a way to watch the schema files
     const onChange = async (filenames: string[]) => {
       const imports: Record<string, unknown> = {}
       for (const path of filenames) {
