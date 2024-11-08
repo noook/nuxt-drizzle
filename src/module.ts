@@ -68,8 +68,6 @@ export default defineNuxtModule<ModuleOptions>({
     initSchemaWatcher(nuxt, resolvedPaths, onChange)
 
     nuxt.hook('builder:watch', (event, path) => {
-      console.log(resolver.resolve(nuxt.options.rootDir, path))
-      console.log(drizzleConfigPath)
       if (drizzleConfigPath === resolver.resolve(nuxt.options.rootDir, path)) {
         logger.info(`Restarting Nuxt due to ${path} change`)
         nuxt.callHook('restart')
