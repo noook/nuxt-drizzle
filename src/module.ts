@@ -1,20 +1,32 @@
 import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
 import { defineConfig } from 'drizzle-kit'
 import { generateSQLiteDrizzleJson } from 'drizzle-kit/api'
-import { prepareFilenames } from './loader'
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ModuleOptions {}
+export interface ModuleOptions {
+  /**
+   * Enable Drizzle Studio integration
+   *
+   * @default true
+   */
+  studio: boolean
+}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'my-module',
-    configKey: 'myModule',
+    name: 'nuxt-drizzle',
+    configKey: 'drizzle',
   },
   // Default configuration options of the Nuxt module
-  defaults: {},
-  async setup(_options, _nuxt) {
+  defaults: {
+    studio: true,
+  },
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+
+    setupDevToolsUI(nuxt, resolver)
+
+    if (options.studio) {
+      setupDrizzleStudio(nuxt)
+    }
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
     addPlugin(resolver.resolve('./runtime/plugin'))
