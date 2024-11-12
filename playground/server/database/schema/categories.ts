@@ -7,8 +7,8 @@ export const categories = sqliteTable('categories', {
 })
 
 export const postCategories = sqliteTable('post_categories', {
-  postId: integer('post_id').notNull().references(() => posts.id),
-  categoryId: integer('category_id').notNull().references(() => categories.id),
+  postId: integer('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  categoryId: integer('category_id').notNull().references(() => categories.id, { onDelete: 'cascade' }),
 }, table => ({
   pk: primaryKey({ columns: [table.postId, table.categoryId] }),
 }))
