@@ -1,14 +1,16 @@
 import chokidar from 'chokidar'
+import { useThrottleFn } from '@vueuse/core'
 import type { Nuxt } from 'nuxt/schema'
 import { prepareFilenames } from './loader'
 
 export function initSchemaWatcher(nuxt: Nuxt, schemaPaths: string[], onChange: (path: string[]) => void) {
   const filenames = prepareFilenames(schemaPaths)
-  const _onChange = () => onChange(filenames)
+  // Chokidar emits multiple events for a single file change, so we throttle the callback
+  const _onChange = useThrottleFn(() => onChange(filenames), 50)
 
   chokidar
     .watch(schemaPaths)
-    .on('add', _onChange)
-    .on('change', _onChange)
-    .on('unlink', _onChange)
+    .on('all', () => {
+      _onChange()
+    })
 }
